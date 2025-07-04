@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生態系統探險家 - 進階版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 95%;
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .game-modes {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .mode-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #4CAF50;
+            border-color: white;
+        }
+
+        .game-area {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .environment-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .env-button {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+        }
+
+        .env-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+        }
+
+        .env-button.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            box-shadow: 0 5px 15px rgba(76,175,80,0.3);
+        }
+
+        .exploration-area {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 3px solid #e9ecef;
+        }
+
+        .creature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .creature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .creature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #4CAF50;
+        }
+
+        .creature-card.discovered {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border-color: #4CAF50;
+        }
+
+        .creature-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+
+        .creature-card.locked:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #e9ecef;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.2rem;
+        }
+
+        .creature-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .creature-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .creature-role {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .question-panel {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .question-panel.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .answer-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .answer-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .answer-btn.correct {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+
+        .answer-btn.wrong {
+            background: #f44336;
+            border-color: #d32f2f;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        /* 食物鏈連線遊戲 */
+        .food-chain-game {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .food-chain-game.active {
+            display: block;
+        }
+
+        .chain-level {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            align-items: center;
+        }
+
+        .chain-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+            min-width: 120px;
+        }
+
+        .chain-item:hover {
+            transform: scale(1.05);
+            border-color: #4CAF50;
+        }
+
+        .chain-item.selected {
+            background: #4CAF50;
+            color: white;
+            border-color: #45a049;
+        }
+
+        .chain-item.correct {
+            background: #4CAF50;
+            color: white;
+            animation: pulse 1s;
+        }
+
+        .chain-item.wrong {
+            background: #f44336;
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .chain-arrow {
+            font-size: 2rem;
+            color: #666;
+        }
+
+        /* 實驗模擬 */
+        .experiment-lab {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .experiment-lab.active {
+            display: block;
+        }
+
+        .experiment-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .experiment-display {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+            min-height: 200px;
+        }
+
+        .population-graph {
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            height: 150px;
+            margin-top: 20px;
+        }
+
+        .population-bar {
+            width: 30px;
+            background: #4CAF50;
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+        }
+
+        .population-bar.predator {
+            background: #FF6B6B;
+        }
+
+        .population-bar.prey {
+            background: #4CAF50;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .achievement {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .game-header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .answers {
+                grid-template-columns: 1fr;
+            }
+
+            .environment-selector {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🌍 生態系統探險家</h1>
+            <p>探索大自然的奧秘，發現生物之間的關係！</p>
+            
+            <div class="game-modes">
+                <button class="mode-btn active" onclick="switchMode('explore')">🔍 探索模式</button>
+                <button class="mode-btn" onclick="switchMode('foodchain')">🔗 食物鏈</button>
+                <button class="mode-btn" onclick="switchMode('experiment')">🧪 實驗室</button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span>🔍 已發現：</span>
+                    <span id="discovered-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>⭐ 分數：</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>🏆 等級：</span>
+                    <span id="level">新手探險家</span>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <!-- 探索模式 -->
+            <div id="explore-mode" class="game-mode active">
+                <div class="environment-selector">
+                    <button class="env-button active" onclick="selectEnvironment('forest')">🌲 森林</button>
+                    <button class="env-button" onclick="selectEnvironment('ocean')">🌊 海洋</button>
+                    <button class="env-button" onclick="selectEnvironment('grassland')">🌾 草原</button>
+                    <button class="env-button" onclick="selectEnvironment('desert')">🏜️ 沙漠</button>
+                    <button class="env-button" onclick="selectEnvironment('arctic')">🧊 極地</button>
+                    <button class="env-button" onclick="selectEnvironment('rainforest')">🌴 熱帶雨林</button>
+                    <button class="env-button" onclick="selectEnvironment('wetland')">🦆 濕地</button>
+                    <button class="env-button" onclick="selectEnvironment('mountain')">⛰️ 高山</button>
+                </div>
+
+                <div class="exploration-area">
+                    <h3>🔍 探索 <span id="current-env">森林</span> 生態系統</h3>
+                    <p>點擊生物來了解它們在生態系統中的角色！必須回答問題才能繼續探索。</p>
+                    <div class="creature-grid" id="creature-grid">
+                        <!-- 生物卡片會在這裡動態生成 -->
+                    </div>
+                </div>
+
+                <div class="question-panel" id="question-panel">
+                    <div class="question-title" id="question-title"></div>
+                    <div id="question-content"></div>
+                    <div class="answers" id="answers"></div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+            </div>
+
+            <!-- 食物鏈連線遊戲 -->
+            <div id="foodchain-mode" class="game-mode food-chain-game">
+                <h3>🔗 建立食物鏈</h3>
+                <p>點擊生物來建立正確的食物鏈順序！</p>
+                
+                <div class="chain-level">
+                    <div class="chain-item" data-level="1">
+                        <div class="creature-emoji">🌱</div>
+                        <div>生產者</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-item" data-level="2" id="chain-slot-2">
+                        <div>點擊選擇</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-item" data-level="3" id="chain-slot-3">
+                        <div>點擊選擇</div>
+                    </div>
+                    <div class="chain-arrow">→</div>
+                    <div class="chain-item" data-level="4" id="chain-slot-4">
+                        <div>點擊選擇</div>
+                    </div>
+                </div>
+
+                <div class="chain-options" id="chain-options">
+                    <!-- 選項會動態生成 -->
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="control-btn" onclick="checkFoodChain()">🔍 檢查答案</button>
+                    <button class="control-btn" onclick="resetFoodChain()">🔄 重新開始</button>
+                </div>
+            </div>
+
+            <!-- 實驗模擬 -->
+            <div id="experiment-mode" class="game-mode experiment-lab">
+                <h3>🧪 生態系統實驗室</h3>
+                <p>調整環境條件，觀察生物數量的變化！</p>
+                
+                <div class="experiment-controls">
+                    <button class="control-btn" onclick="adjustEnvironment('temperature', 1)">🌡️ 升溫</button>
+                    <button class="control-btn" onclick="adjustEnvironment('temperature', -1)">❄️ 降溫</button>
+                    <button class="control-btn" onclick="adjustEnvironment('rainfall', 1)">🌧️ 增雨</button>
+                    <button class="control-btn" onclick="adjustEnvironment('rainfall', -1)">☀️ 減雨</button>
+                    <button class="control-btn" onclick="adjustEnvironment('pollution', 1)">🏭 污染</button>
+                    <button class="control-btn" onclick="adjustEnvironment('pollution', -1)">🌱 淨化</button>
+                    <button class="control-btn" onclick="resetExperiment()">🔄 重置</button>
+                </div>
+
+                <div class="experiment-display">
+                    <h4>環境狀態：</h4>
+                    <div id="environment-status">
+                        <p>🌡️ 溫度：<span id="temperature">適中</span></p>
+                        <p>🌧️ 降雨：<span id="rainfall">適中</span></p>
+                        <p>🏭 污染：<span id="pollution">低</span></p>
+                    </div>
+                    
+                    <div class="population-graph" id="population-graph">
+                        <div class="population-bar prey" id="plant-bar" style="height: 60px;">
+                            <div class="bar-label">🌱 植物</div>
+                        </div>
+                        <div class="population-bar prey" id="herbivore-bar" style="height: 40px;">
+                            <div class="bar-label">🐰 草食動物</div>
+                        </div>
+                        <div class="population-bar predator" id="carnivore-bar" style="height: 30px;">
+                            <div class="bar-label">🦊 肉食動物</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="achievement" class="achievement hidden">
+                🎉 太棒了！你獲得了新成就！
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 擴展的遊戲數據
+        const gameData = {
+            forest: {
+                name: '森林',
+                creatures: [
+                    { id: 'tree', emoji: '🌳', name: '大樹', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'rabbit', emoji: '🐰', name: '兔子', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'fox', emoji: '🦊', name: '狐狸', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'bird', emoji: '🐦', name: '鳥類', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'mushroom', emoji: '🍄', name: '蘑菇', role: '分解者', discovered: false, questions: 'decomposer' },
+                    { id: 'squirrel', emoji: '🐿️', name: '松鼠', role: '草食動物', discovered: false, questions: 'herbivore' }
+                ]
+            },
+            ocean: {
+                name: '海洋',
+                creatures: [
+                    { id: 'seaweed', emoji: '🌿', name: '海草', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'fish', emoji: '🐟', name: '小魚', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'shark', emoji: '🦈', name: '鯊魚', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'whale', emoji: '🐋', name: '鯨魚', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'crab', emoji: '🦀', name: '螃蟹', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'jellyfish', emoji: '🪼', name: '水母', role: '肉食動物', discovered: false, questions: 'carnivore' }
+                ]
+            },
+            grassland: {
+                name: '草原',
+                creatures: [
+                    { id: 'grass', emoji: '🌱', name: '草', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'zebra', emoji: '🦓', name: '斑馬', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'lion', emoji: '🦁', name: '獅子', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'elephant', emoji: '🐘', name: '大象', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'eagle', emoji: '🦅', name: '老鷹', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'antelope', emoji: '🦌', name: '羚羊', role: '草食動物', discovered: false, questions: 'herbivore' }
+                ]
+            },
+            desert: {
+                name: '沙漠',
+                creatures: [
+                    { id: 'cactus', emoji: '🌵', name: '仙人掌', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'camel', emoji: '🐪', name: '駱駝', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'snake', emoji: '🐍', name: '蛇', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'lizard', emoji: '🦎', name: '蜥蜴', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'scorpion', emoji: '🦂', name: '蠍子', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'beetle', emoji: '🪲', name: '甲蟲', role: '分解者', discovered: false, questions: 'decomposer' }
+                ]
+            },
+            arctic: {
+                name: '極地',
+                creatures: [
+                    { id: 'algae', emoji: '🟢', name: '藻類', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'seal', emoji: '🦭', name: '海豹', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'polarbear', emoji: '🐻‍❄️', name: '北極熊', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'penguin', emoji: '🐧', name: '企鵝', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'walrus', emoji: '🦭', name: '海象', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'arctic_fox', emoji: '🦊', name: '北極狐', role: '雜食動物', discovered: false, questions: 'omnivore' }
+                ]
+            },
+            rainforest: {
+                name: '熱帶雨林',
+                creatures: [
+                    { id: 'tropical_tree', emoji: '🌴', name: '熱帶樹木', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'monkey', emoji: '🐒', name: '猴子', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'parrot', emoji: '🦜', name: '鸚鵡', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'jaguar', emoji: '🐆', name: '美洲豹', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'toucan', emoji: '🦃', name: '巨嘴鳥', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'sloth', emoji: '🦥', name: '樹懶', role: '草食動物', discovered: false, questions: 'herbivore' }
+                ]
+            },
+            wetland: {
+                name: '濕地',
+                creatures: [
+                    { id: 'reed', emoji: '🌾', name: '蘆葦', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'duck', emoji: '🦆', name: '鴨子', role: '雜食動物', discovered: false, questions: 'omnivore' },
+                    { id: 'heron', emoji: '🦢', name: '鷺鷥', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'frog', emoji: '🐸', name: '青蛙', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'beaver', emoji: '🦫', name: '海狸', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'dragonfly', emoji: '🦋', name: '蜻蜓', role: '肉食動物', discovered: false, questions: 'carnivore' }
+                ]
+            },
+            mountain: {
+                name: '高山',
+                creatures: [
+                    { id: 'pine', emoji: '🌲', name: '松樹', role: '生產者', discovered: false, questions: 'producer' },
+                    { id: 'mountain_goat', emoji: '🐐', name: '山羊', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'snow_leopard', emoji: '🐆', name: '雪豹', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'eagle_mountain', emoji: '🦅', name: '山鷹', role: '肉食動物', discovered: false, questions: 'carnivore' },
+                    { id: 'marmot', emoji: '🦫', name: '旱獺', role: '草食動物', discovered: false, questions: 'herbivore' },
+                    { id: 'yak', emoji: '🐂', name: '氂牛', role: '草食動物', discovered: false, questions: 'herbivore' }
+                ]
+            }
+        };
+
+        // 擴展的問題庫
+        const questions = {
+            producer: [
+                {
+                    question: "生產者在生態系統中的主要作用是什麼？",
+                    answers: ["製造氧氣和有機物", "分解死亡的生物", "控制其他生物數量", "保護環境不受污染"],
+                    correct: 0,
+                    explanation: "生產者（如植物）透過光合作用製造氧氣和有機物，是生態系統能量的主要來源！"
+                },
+                {
+                    question: "植物進行光合作用需要哪些條件？",
+                    answers: ["陽光、水、二氧化碳", "氧氣、水、養分", "溫度、濕度、土壤", "陽光、氧氣、氮氣"],
+                    correct: 0,
+                    explanation: "植物需要陽光、水和二氧化碳來進行光合作用，製造葡萄糖和氧氣。"
+                }
+            ],
+            herbivore: [
+                {
+                    question: "草食動物在食物鏈中扮演什麼角色？",
+                    answers: ["頂級掠食者", "初級消費者", "分解者", "生產者"],
+                    correct: 1,
+                    explanation: "草食動物是初級消費者，它們直接食用植物，將植物的能量轉換並傳遞給其他動物。"
+                },
+                {
+                    question: "為什麼草食動物通常需要花很多時間進食？",
+                    answers: ["植物營養密度低", "牙齒不夠鋒利", "消化速度慢", "食物稀少"],
+                    correct: 0,
+                    explanation: "植物的營養密度比肉類低，草食動物需要吃大量植物才能獲得足夠的營養。"
+                }
+            ],
+            carnivore: [
+                {
+                    question: "肉食動物對生態系統有什麼重要影響？",
+                    answers: ["增加植物數量", "控制草食動物數量", "製造氧氣", "分解有機物"],
+                    correct: 1,
+                    explanation: "肉食動物是重要的控制者，它們獵食其他動物，維持生態系統的平衡。"
+                },
+                {
+                    question: "肉食動物的牙齒通常有什麼特徵？",
+                    answers: ["平坦適合磨碎", "尖銳適合撕咬", "很小不明顯", "沒有特殊形狀"],
+                    correct: 1,
+                    explanation: "肉食動物有尖銳的犬齒和門齒，適合撕咬和切割肉類。"
+                }
+            ],
+            omnivore: [
+                {
+                    question: "雜食動物的生存優勢是什麼？",
+                    answers: ["食物來源多樣化", "消化能力最強", "身體最大", "速度最快"],
+                    correct: 0,
+                    explanation: "雜食動物既吃植物又吃動物，食物來源多樣化，能適應不同環境變化。"
+                },
+                {
+                    question: "人類屬於哪種類型的消費者？",
+                    answers: ["草食動物", "肉食動物", "雜食動物", "分解者"],
+                    correct: 2,
+                    explanation: "人類是雜食動物，既吃植物也吃動物，牙齒結構也適合處理多種食物。"
+                }
+            ],
+            decomposer: [
+                {
+                    question: "分解者在生態系統中的功能是什麼？",
+                    answers: ["製造食物", "獵食其他生物", "分解死亡生物並回收營養", "保護其他生物"],
+                    correct: 2,
+                    explanation: "分解者將死亡的生物分解，將營養物質回收到土壤中，讓植物能夠重新利用。"
+                },
+                {
+                    question: "如果沒有分解者，生態系統會發生什麼？",
+                    answers: ["更加繁榮", "營養循環中斷", "食物鏈變長", "溫度上升"],
+                    correct: 1,
+                    explanation: "沒有分解者，死亡生物無法分解，營養物質無法回收，生態系統的營養循環會中斷。"
+                }
+            ]
+        };
+
+        // 食物鏈遊戲數據
+        const foodChainData = {
+            forest: [
+                { id: 'grass', emoji: '🌱', name: '草', level: 1, type: 'producer' },
+                { id: 'rabbit', emoji: '🐰', name: '兔子', level: 2, type: 'herbivore' },
+                { id: 'fox', emoji: '🦊', name: '狐狸', level: 3, type: 'carnivore' },
+                { id: 'eagle', emoji: '🦅', name: '老鷹', level: 4, type: 'carnivore' }
+            ],
+            ocean: [
+                { id: 'algae', emoji: '🟢', name: '藻類', level: 1, type: 'producer' },
+                { id: 'small_fish', emoji: '🐟', name: '小魚', level: 2, type: 'herbivore' },
+                { id: 'big_fish', emoji: '🐠', name: '大魚', level: 3, type: 'carnivore' },
+                { id: 'shark', emoji: '🦈', name: '鯊魚', level: 4, type: 'carnivore' }
+            ]
+        };
+
+        // 實驗數據
+        const experimentData = {
+            temperature: 0,  // -2 到 +2
+            rainfall: 0,     // -2 到 +2
+            pollution: 0,    // 0 到 +3
+            basePop: {
+                plants: 60,
+                herbivores: 40,
+                carnivores: 30
+            }
+        };
+
+        // 遊戲狀態
+        let gameState = {
+            currentEnvironment: 'forest',
+            currentMode: 'explore',
+            score: 0,
+            discoveredCount: 0,
+            totalCreatures: 0,
+            level: '新手探險家',
+            answeredQuestions: new Set(),
+            currentQuestion: null,
+            foodChainProgress: { level: 1, selected: [] },
+            waitingForAnswer: false
+        };
+
+        // 初始化遊戲
+        function initGame() {
+            gameState.totalCreatures = Object.values(gameData).reduce((total, env) => total + env.creatures.length, 0);
+            updateDisplay();
+            loadEnvironment('forest');
+            setupFoodChainGame();
+            resetExperiment();
+        }
+
+        // 切換遊戲模式
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.game-mode').forEach(mode => mode.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(mode + '-mode').classList.add('active');
+            
+            gameState.currentMode = mode;
+            
+            if (mode === 'foodchain') {
+                loadFoodChainGame();
+            }
+        }
+
+        // 選擇環境
+        function selectEnvironment(envId) {
+            if (gameState.waitingForAnswer) {
+                alert('請先回答當前問題才能切換環境！');
+                return;
+            }
+            
+            document.querySelectorAll('.env-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            loadEnvironment(envId);
+            gameState.currentEnvironment = envId;
+        }
+
+        // 載入環境
+        function loadEnvironment(envId) {
+            const env = gameData[envId];
+            document.getElementById('current-env').textContent = env.name;
+            
+            const grid = document.getElementById('creature-grid');
+            grid.innerHTML = '';
+            
+            env.creatures.forEach((creature, index) => {
+                const card = document.createElement('div');
+                const isLocked = index > 0 && !env.creatures[index - 1].discovered;
+                
+                card.className = `creature-card ${creature.discovered ? 'discovered' : ''} ${isLocked ? 'locked' : ''}`;
+                card.innerHTML = `
+                    ${isLocked ? '<div class="lock-icon">🔒</div>' : ''}
+                    <span class="creature-emoji">${creature.emoji}</span>
+                    <div class="creature-name">${creature.name}</div>
+                    <div class="creature-role">${creature.role}</div>
+                `;
+                
+                if (!isLocked) {
+                    card.onclick = () => discoverCreature(envId, creature.id);
+                }
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // 發現生物
+        function discoverCreature(envId, creatureId) {
+            if (gameState.waitingForAnswer) {
+                alert('請先回答當前問題！');
+                return;
+            }
+            
+            const creature = gameData[envId].creatures.find(c => c.id === creatureId);
+            
+            if (!creature.discovered) {
+                creature.discovered = true;
+                gameState.discoveredCount++;
+                gameState.score += 10;
+                
+                showQuestion(creature);
+                gameState.waitingForAnswer = true;
+                
+                updateDisplay();
+                loadEnvironment(envId);
+                checkAchievements();
+            }
+        }
+
+        // 顯示問題
+        function showQuestion(creature) {
+            const questionPanel = document.getElementById('question-panel');
+            const questionTitle = document.getElementById('question-title');
+            const questionContent = document.getElementById('question-content');
+            const answersDiv = document.getElementById('answers');
+            const feedbackDiv = document.getElementById('feedback');
+            
+            const questionType = creature.questions || 'producer';
+            const questionList = questions[questionType];
+            const questionData = questionList[Math.floor(Math.random() * questionList.length)];
+            
+            gameState.currentQuestion = questionData;
+            
+            questionTitle.textContent = `🎯 關於 ${creature.name} 的問題`;
+            questionContent.innerHTML = `<p>${questionData.question}</p>`;
+            
+            answersDiv.innerHTML = '';
+            feedbackDiv.innerHTML = '';
+            
+            questionData.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => checkAnswer(index, questionData.correct, questionData.explanation);
+                answersDiv.appendChild(btn);
+            });
+            
+            questionPanel.classList.add('active');
+        }
+
+        // 檢查答案
+        function checkAnswer(selectedIndex, correctIndex, explanation) {
+            const buttons = document.querySelectorAll('.answer-btn');
+            const feedbackDiv = document.getElementById('feedback');
+            
+            buttons.forEach((btn, index) => {
+                btn.onclick = null;
+                if (index === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    btn.classList.add('wrong');
+                }
+            });
+            
+            if (selectedIndex === correctIndex) {
+                gameState.score += 20;
+                feedbackDiv.innerHTML = `<p>✅ 答對了！${explanation}</p>`;
+            } else {
+                feedbackDiv.innerHTML = `<p>❌ 答錯了！正確答案是：${buttons[correctIndex].textContent}<br>${explanation}</p>`;
+            }
+            
+            gameState.waitingForAnswer = false;
+            updateDisplay();
+            
+            setTimeout(() => {
+                document.getElementById('question-panel').classList.remove('active');
+            }, 3000);
+        }
+
+        // 設置食物鏈遊戲
+        function setupFoodChainGame() {
+            const optionsDiv = document.getElementById('chain-options');
+            const currentChain = foodChainData.forest;
+            
+            optionsDiv.innerHTML = '<h4>選擇合適的生物：</h4>';
+            
+            currentChain.slice(1).forEach(creature => {
+                const option = document.createElement('div');
+                option.className = 'chain-item';
+                option.innerHTML = `
+                    <div class="creature-emoji">${creature.emoji}</div>
+                    <div>${creature.name}</div>
+                `;
+                option.onclick = () => selectForChain(creature);
+                optionsDiv.appendChild(option);
+            });
+        }
+
+        // 載入食物鏈遊戲
+        function loadFoodChainGame() {
+            resetFoodChain();
+            setupFoodChainGame();
+        }
+
+        // 選擇食物鏈生物
+        function selectForChain(creature) {
+            const currentLevel = gameState.foodChainProgress.level;
+            if (currentLevel > 4) return;
+            
+            const slot = document.getElementById(`chain-slot-${currentLevel + 1}`);
+            if (slot) {
+                slot.innerHTML = `
+                    <div class="creature-emoji">${creature.emoji}</div>
+                    <div>${creature.name}</div>
+                `;
+                slot.dataset.creatureId = creature.id;
+                gameState.foodChainProgress.selected.push(creature);
+                gameState.foodChainProgress.level++;
+            }
+        }
+
+        // 檢查食物鏈答案
+        function checkFoodChain() {
+            const correctChain = foodChainData.forest.slice(1);
+            const userChain = gameState.foodChainProgress.selected;
+            
+            let isCorrect = true;
+            for (let i = 0; i < userChain.length; i++) {
+                const slot = document.getElementById(`chain-slot-${i + 2}`);
+                if (userChain[i].id === correctChain[i].id) {
+                    slot.classList.add('correct');
+                } else {
+                    slot.classList.add('wrong');
+                    isCorrect = false;
+                }
+            }
+            
+            if (isCorrect && userChain.length === correctChain.length) {
+                gameState.score += 50;
+                updateDisplay();
+                showAchievement('🎉 食物鏈建立正確！你是生態專家！');
+            } else {
+                showAchievement('🤔 食物鏈不太對，再試試看！');
+            }
+        }
+
+        // 重置食物鏈
+        function resetFoodChain() {
+            gameState.foodChainProgress = { level: 1, selected: [] };
+            
+            for (let i = 2; i <= 4; i++) {
+                const slot = document.getElementById(`chain-slot-${i}`);
+                slot.innerHTML = '<div>點擊選擇</div>';
+                slot.className = 'chain-item';
+                slot.dataset.creatureId = '';
+            }
+        }
+
+        // 調整實驗環境
+        function adjustEnvironment(factor, change) {
+            switch (factor) {
+                case 'temperature':
+                    experimentData.temperature = Math.max(-2, Math.min(2, experimentData.temperature + change));
+                    break;
+                case 'rainfall':
+                    experimentData.rainfall = Math.max(-2, Math.min(2, experimentData.rainfall + change));
+                    break;
+                case 'pollution':
+                    experimentData.pollution = Math.max(0, Math.min(3, experimentData.pollution + change));
+                    break;
+            }
+            updateExperimentDisplay();
+        }
+
+        // 更新實驗顯示
+        function updateExperimentDisplay() {
+            const tempLabels = ['極冷', '很冷', '適中', '很熱', '極熱'];
+            const rainLabels = ['乾旱', '少雨', '適中', '多雨', '洪水'];
+            const pollutionLabels = ['低', '中', '高', '極高'];
+            
+            document.getElementById('temperature').textContent = tempLabels[experimentData.temperature + 2];
+            document.getElementById('rainfall').textContent = rainLabels[experimentData.rainfall + 2];
+            document.getElementById('pollution').textContent = pollutionLabels[experimentData.pollution];
+            
+            // 計算種群變化
+            const tempEffect = 1 - Math.abs(experimentData.temperature) * 0.2;
+            const rainEffect = 1 - Math.abs(experimentData.rainfall) * 0.15;
+            const pollutionEffect = 1 - experimentData.pollution * 0.25;
+            
+            const plantPop = experimentData.basePop.plants * tempEffect * rainEffect * pollutionEffect;
+            const herbivorePop = experimentData.basePop.herbivores * (plantPop / experimentData.basePop.plants) * pollutionEffect;
+            const carnivorePop = experimentData.basePop.carnivores * (herbivorePop / experimentData.basePop.herbivores) * pollutionEffect;
+            
+            document.getElementById('plant-bar').style.height = Math.max(10, plantPop) + 'px';
+            document.getElementById('herbivore-bar').style.height = Math.max(5, herbivorePop) + 'px';
+            document.getElementById('carnivore-bar').style.height = Math.max(5, carnivorePop) + 'px';
+        }
+
+        // 重置實驗
+        function resetExperiment() {
+            experimentData.temperature = 0;
+            experimentData.rainfall = 0;
+            experimentData.pollution = 0;
+            updateExperimentDisplay();
+        }
+
+        // 檢查成就
+        function checkAchievements() {
+            const achievement = document.getElementById('achievement');
+            let showAchievement = false;
+            let achievementText = '';
+            
+            if (gameState.discoveredCount === 5 && gameState.level === '新手探險家') {
+                gameState.level = '生態學徒';
+                achievementText = '🎉 恭喜升級為生態學徒！';
+                showAchievement = true;
+            } else if (gameState.discoveredCount === 15 && gameState.level === '生態學徒') {
+                gameState.level = '環境專家';
+                achievementText = '🏆 恭喜升級為環境專家！';
+                showAchievement = true;
+            } else if (gameState.discoveredCount === 30 && gameState.level === '環境專家') {
+                gameState.level = '生態大師';
+                achievementText = '🌟 恭喜成為生態大師！';
+                showAchievement = true;
+            } else if (gameState.discoveredCount === gameState.totalCreatures) {
+                achievementText = '🎊 太棒了！你發現了所有生物！你是真正的生態探險家！';
+                showAchievement = true;
+            }
+            
+            if (showAchievement) {
+                this.showAchievement(achievementText);
+            }
+        }
+
+        // 顯示成就
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            achievement.textContent = text;
+            achievement.classList.remove('hidden');
+            setTimeout(() => {
+                achievement.classList.add('hidden');
+            }, 4000);
+        }
+
+        // 更新顯示
+        function updateDisplay() {
+            document.getElementById('discovered-count').textContent = gameState.discoveredCount;
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('level').textContent = gameState.level;
+            
+            const progress = (gameState.discoveredCount / gameState.totalCreatures) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        // 啟動遊戲
+        initGame();
+    </script>
+</body>
+</html>
