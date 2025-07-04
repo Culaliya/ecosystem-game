@@ -432,6 +432,37 @@
             display: none;
         }
 
+        /* 音效控制 */
+        .audio-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .audio-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .audio-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .audio-btn.muted {
+            background: rgba(255,100,100,0.9);
+        }
+
         @media (max-width: 600px) {
             .game-header h1 {
                 font-size: 2rem;
@@ -454,6 +485,12 @@
 </head>
 <body>
     <div class="game-container">
+        <!-- 音效控制 -->
+        <div class="audio-controls">
+            <button class="audio-btn" id="music-btn" onclick="toggleMusic()" title="背景音樂">🎵</button>
+            <button class="audio-btn" id="sound-btn" onclick="toggleSound()" title="音效">🔊</button>
+        </div>
+        
         <div class="game-header">
             <h1>🌍 生態系統探險家</h1>
             <p>探索大自然的奧秘，發現生物之間的關係！</p>
@@ -785,8 +822,160 @@
             }
         };
 
-        // 遊戲狀態
-        let gameState = {
+        // 音效系統
+        const audioSystem = {
+            musicEnabled: true,
+            soundEnabled: true,
+            currentMusic: null,
+            
+            // 使用 Web Audio API 生成音效
+            audioContext: null,
+            
+            init() {
+                // 創建 AudioContext
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 開始背景音樂
+                this.startBackgroundMusic();
+            },
+            
+            // 播放音效
+            playTone(frequency, duration, type = 'sine') {
+                if (!this.soundEnabled || !this.audioContext) return;
+                
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + duration);
+            },
+            
+            // 播放和弦
+            playChord(frequencies, duration) {
+                if (!this.soundEnabled || !this.audioContext) return;
+                
+                frequencies.forEach(freq => {
+                    this.playTone(freq, duration);
+                });
+            },
+            
+            // 背景音樂（簡單的旋律循環）
+            startBackgroundMusic() {
+                if (!this.musicEnabled || !this.audioContext) return;
+                
+                const playMelody = () => {
+                    const melody = [
+                        { freq: 523.25, duration: 0.5 }, // C5
+                        { freq: 587.33, duration: 0.5 }, // D5
+                        { freq: 659.25, duration: 0.5 }, // E5
+                        { freq: 698.46, duration: 0.5 }, // F5
+                        { freq: 783.99, duration: 1.0 }, // G5
+                        { freq: 659.25, duration: 0.5 }, // E5
+                        { freq: 523.25, duration: 1.0 }, // C5
+                    ];
+                    
+                    let currentTime = this.audioContext.currentTime;
+                    
+                    melody.forEach(note => {
+                        if (this.musicEnabled) {
+                            this.playTone(note.freq, note.duration, 'triangle');
+                        }
+                        currentTime += note.duration;
+                    });
+                };
+                
+                // 每10秒播放一次旋律
+                const musicInterval = setInterval(() => {
+                    if (this.musicEnabled) {
+                        playMelody();
+                    }
+                }, 10000);
+                
+                // 立即播放一次
+                playMelody();
+            }
+        };
+
+        // 播放特定音效
+        function playSound(type) {
+            if (!audioSystem.soundEnabled || !audioSystem.audioContext) return;
+            
+            switch(type) {
+                case 'discover':
+                    // 發現音效：上升的三音
+                    audioSystem.playTone(440, 0.1);
+                    setTimeout(() => audioSystem.playTone(554, 0.1), 100);
+                    setTimeout(() => audioSystem.playTone(659, 0.2), 200);
+                    break;
+                    
+                case 'correct':
+                    // 正確音效：愉快的和弦
+                    audioSystem.playChord([523.25, 659.25, 783.99], 0.5);
+                    break;
+                    
+                case 'wrong':
+                    // 錯誤音效：低沉的單音
+                    audioSystem.playTone(220, 0.3, 'sawtooth');
+                    break;
+                    
+                case 'achievement':
+                    // 成就音效：華麗的音階
+                    [523, 587, 659, 698, 784, 880, 988, 1047].forEach((freq, i) => {
+                        setTimeout(() => audioSystem.playTone(freq, 0.2), i * 100);
+                    });
+                    break;
+                    
+                case 'button':
+                    // 按鈕音效：短促的點擊聲
+                    audioSystem.playTone(800, 0.1);
+                    break;
+            }
+        }
+
+        // 切換音樂
+        function toggleMusic() {
+            audioSystem.musicEnabled = !audioSystem.musicEnabled;
+            const btn = document.getElementById('music-btn');
+            
+            if (audioSystem.musicEnabled) {
+                btn.textContent = '🎵';
+                btn.classList.remove('muted');
+                btn.title = '背景音樂：開啟';
+            } else {
+                btn.textContent = '🔇';
+                btn.classList.add('muted');
+                btn.title = '背景音樂：關閉';
+            }
+            
+            playSound('button');
+        }
+
+        // 切換音效
+        function toggleSound() {
+            audioSystem.soundEnabled = !audioSystem.soundEnabled;
+            const btn = document.getElementById('sound-btn');
+            
+            if (audioSystem.soundEnabled) {
+                btn.textContent = '🔊';
+                btn.classList.remove('muted');
+                btn.title = '音效：開啟';
+            } else {
+                btn.textContent = '🔇';
+                btn.classList.add('muted');
+                btn.title = '音效：關閉';
+            }
+            
+            playSound('button');
+        }
             currentEnvironment: 'forest',
             currentMode: 'explore',
             score: 0,
@@ -821,6 +1010,8 @@
             if (mode === 'foodchain') {
                 loadFoodChainGame();
             }
+            
+            playSound('button');
         }
 
         // 選擇環境
@@ -835,6 +1026,7 @@
             
             loadEnvironment(envId);
             gameState.currentEnvironment = envId;
+            playSound('button');
         }
 
         // 載入環境
@@ -879,12 +1071,19 @@
                 gameState.discoveredCount++;
                 gameState.score += 10;
                 
+                // 播放發現音效
+                playSound('discover');
+                
                 showQuestion(creature);
                 gameState.waitingForAnswer = true;
                 
                 updateDisplay();
                 loadEnvironment(envId);
                 checkAchievements();
+            } else {
+                // 如果已經發現，重新顯示問題
+                showQuestion(creature);
+                gameState.waitingForAnswer = true;
             }
         }
 
@@ -936,8 +1135,10 @@
             if (selectedIndex === correctIndex) {
                 gameState.score += 20;
                 feedbackDiv.innerHTML = `<p>✅ 答對了！${explanation}</p>`;
+                playSound('correct');
             } else {
                 feedbackDiv.innerHTML = `<p>❌ 答錯了！正確答案是：${buttons[correctIndex].textContent}<br>${explanation}</p>`;
+                playSound('wrong');
             }
             
             gameState.waitingForAnswer = false;
@@ -1010,8 +1211,10 @@
                 gameState.score += 50;
                 updateDisplay();
                 showAchievement('🎉 食物鏈建立正確！你是生態專家！');
+                playSound('achievement');
             } else {
                 showAchievement('🤔 食物鏈不太對，再試試看！');
+                playSound('wrong');
             }
         }
 
@@ -1100,6 +1303,7 @@
             
             if (showAchievement) {
                 this.showAchievement(achievementText);
+                playSound('achievement');
             }
         }
 
