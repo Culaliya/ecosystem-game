@@ -253,149 +253,6 @@
             text-align: center;
         }
 
-        /* 食物鏈連線遊戲 */
-        .food-chain-game {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .food-chain-game.active {
-            display: block;
-        }
-
-        .chain-level {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            align-items: center;
-        }
-
-        .chain-item {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
-            min-width: 120px;
-        }
-
-        .chain-item:hover {
-            transform: scale(1.05);
-            border-color: #4CAF50;
-        }
-
-        .chain-item.selected {
-            background: #4CAF50;
-            color: white;
-            border-color: #45a049;
-        }
-
-        .chain-item.correct {
-            background: #4CAF50;
-            color: white;
-            animation: pulse 1s;
-        }
-
-        .chain-item.wrong {
-            background: #f44336;
-            color: white;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .chain-arrow {
-            font-size: 2rem;
-            color: #666;
-        }
-
-        /* 實驗模擬 */
-        .experiment-lab {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .experiment-lab.active {
-            display: block;
-        }
-
-        .experiment-controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .control-btn {
-            background: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .control-btn:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
-        }
-
-        .experiment-display {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 2px solid #e9ecef;
-            min-height: 200px;
-        }
-
-        .population-graph {
-            display: flex;
-            align-items: end;
-            justify-content: space-around;
-            height: 150px;
-            margin-top: 20px;
-        }
-
-        .population-bar {
-            width: 30px;
-            background: #4CAF50;
-            border-radius: 5px 5px 0 0;
-            transition: height 0.5s ease;
-            position: relative;
-        }
-
-        .population-bar.predator {
-            background: #FF6B6B;
-        }
-
-        .population-bar.prey {
-            background: #4CAF50;
-        }
-
-        .bar-label {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-
         .achievement {
             background: linear-gradient(135deg, #FFD700, #FFA500);
             color: #333;
@@ -547,77 +404,6 @@
                     <div id="question-content"></div>
                     <div class="answers" id="answers"></div>
                     <div class="feedback" id="feedback"></div>
-                </div>
-            </div>
-
-            <!-- 食物鏈連線遊戲 -->
-            <div id="foodchain-mode" class="game-mode food-chain-game">
-                <h3>🔗 建立食物鏈</h3>
-                <p>點擊生物來建立正確的食物鏈順序！</p>
-                
-                <div class="chain-level">
-                    <div class="chain-item" data-level="1">
-                        <div class="creature-emoji">🌱</div>
-                        <div>生產者</div>
-                    </div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-item" data-level="2" id="chain-slot-2">
-                        <div>點擊選擇</div>
-                    </div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-item" data-level="3" id="chain-slot-3">
-                        <div>點擊選擇</div>
-                    </div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-item" data-level="4" id="chain-slot-4">
-                        <div>點擊選擇</div>
-                    </div>
-                </div>
-
-                <div class="chain-options" id="chain-options">
-                    <!-- 選項會動態生成 -->
-                </div>
-
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="control-btn" onclick="checkFoodChain()">🔍 檢查答案</button>
-                    <button class="control-btn" onclick="resetFoodChain()">🔄 重新開始</button>
-                </div>
-            </div>
-
-            <!-- 實驗模擬 -->
-            <div id="experiment-mode" class="game-mode experiment-lab">
-                <h3>🧪 生態系統實驗室</h3>
-                <p>調整環境條件，觀察生物數量的變化！</p>
-                
-                <div class="experiment-controls">
-                    <button class="control-btn" onclick="adjustEnvironment('temperature', 1)">🌡️ 升溫</button>
-                    <button class="control-btn" onclick="adjustEnvironment('temperature', -1)">❄️ 降溫</button>
-                    <button class="control-btn" onclick="adjustEnvironment('rainfall', 1)">🌧️ 增雨</button>
-                    <button class="control-btn" onclick="adjustEnvironment('rainfall', -1)">☀️ 減雨</button>
-                    <button class="control-btn" onclick="adjustEnvironment('pollution', 1)">🏭 污染</button>
-                    <button class="control-btn" onclick="adjustEnvironment('pollution', -1)">🌱 淨化</button>
-                    <button class="control-btn" onclick="resetExperiment()">🔄 重置</button>
-                </div>
-
-                <div class="experiment-display">
-                    <h4>環境狀態：</h4>
-                    <div id="environment-status">
-                        <p>🌡️ 溫度：<span id="temperature">適中</span></p>
-                        <p>🌧️ 降雨：<span id="rainfall">適中</span></p>
-                        <p>🏭 污染：<span id="pollution">低</span></p>
-                    </div>
-                    
-                    <div class="population-graph" id="population-graph">
-                        <div class="population-bar prey" id="plant-bar" style="height: 60px;">
-                            <div class="bar-label">🌱 植物</div>
-                        </div>
-                        <div class="population-bar prey" id="herbivore-bar" style="height: 40px;">
-                            <div class="bar-label">🐰 草食動物</div>
-                        </div>
-                        <div class="population-bar predator" id="carnivore-bar" style="height: 30px;">
-                            <div class="bar-label">🦊 肉食動物</div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -794,32 +580,17 @@
             ]
         };
 
-        // 食物鏈遊戲數據
-        const foodChainData = {
-            forest: [
-                { id: 'grass', emoji: '🌱', name: '草', level: 1, type: 'producer' },
-                { id: 'rabbit', emoji: '🐰', name: '兔子', level: 2, type: 'herbivore' },
-                { id: 'fox', emoji: '🦊', name: '狐狸', level: 3, type: 'carnivore' },
-                { id: 'eagle', emoji: '🦅', name: '老鷹', level: 4, type: 'carnivore' }
-            ],
-            ocean: [
-                { id: 'algae', emoji: '🟢', name: '藻類', level: 1, type: 'producer' },
-                { id: 'small_fish', emoji: '🐟', name: '小魚', level: 2, type: 'herbivore' },
-                { id: 'big_fish', emoji: '🐠', name: '大魚', level: 3, type: 'carnivore' },
-                { id: 'shark', emoji: '🦈', name: '鯊魚', level: 4, type: 'carnivore' }
-            ]
-        };
-
-        // 實驗數據
-        const experimentData = {
-            temperature: 0,  // -2 到 +2
-            rainfall: 0,     // -2 到 +2
-            pollution: 0,    // 0 到 +3
-            basePop: {
-                plants: 60,
-                herbivores: 40,
-                carnivores: 30
-            }
+        // 遊戲狀態
+        let gameState = {
+            currentEnvironment: 'forest',
+            currentMode: 'explore',
+            score: 0,
+            discoveredCount: 0,
+            totalCreatures: 0,
+            level: '新手探險家',
+            answeredQuestions: new Set(),
+            currentQuestion: null,
+            waitingForAnswer: false
         };
 
         // 音效系統
@@ -827,19 +598,13 @@
             musicEnabled: true,
             soundEnabled: true,
             currentMusic: null,
-            
-            // 使用 Web Audio API 生成音效
             audioContext: null,
             
             init() {
-                // 創建 AudioContext
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // 開始背景音樂
                 this.startBackgroundMusic();
             },
             
-            // 播放音效
             playTone(frequency, duration, type = 'sine') {
                 if (!this.soundEnabled || !this.audioContext) return;
                 
@@ -859,7 +624,6 @@
                 oscillator.stop(this.audioContext.currentTime + duration);
             },
             
-            // 播放和弦
             playChord(frequencies, duration) {
                 if (!this.soundEnabled || !this.audioContext) return;
                 
@@ -868,19 +632,18 @@
                 });
             },
             
-            // 背景音樂（簡單的旋律循環）
             startBackgroundMusic() {
                 if (!this.musicEnabled || !this.audioContext) return;
                 
                 const playMelody = () => {
                     const melody = [
-                        { freq: 523.25, duration: 0.5 }, // C5
-                        { freq: 587.33, duration: 0.5 }, // D5
-                        { freq: 659.25, duration: 0.5 }, // E5
-                        { freq: 698.46, duration: 0.5 }, // F5
-                        { freq: 783.99, duration: 1.0 }, // G5
-                        { freq: 659.25, duration: 0.5 }, // E5
-                        { freq: 523.25, duration: 1.0 }, // C5
+                        { freq: 523.25, duration: 0.5 },
+                        { freq: 587.33, duration: 0.5 },
+                        { freq: 659.25, duration: 0.5 },
+                        { freq: 698.46, duration: 0.5 },
+                        { freq: 783.99, duration: 1.0 },
+                        { freq: 659.25, duration: 0.5 },
+                        { freq: 523.25, duration: 1.0 },
                     ];
                     
                     let currentTime = this.audioContext.currentTime;
@@ -893,14 +656,12 @@
                     });
                 };
                 
-                // 每10秒播放一次旋律
                 const musicInterval = setInterval(() => {
                     if (this.musicEnabled) {
                         playMelody();
                     }
                 }, 10000);
                 
-                // 立即播放一次
                 playMelody();
             }
         };
@@ -911,31 +672,26 @@
             
             switch(type) {
                 case 'discover':
-                    // 發現音效：上升的三音
                     audioSystem.playTone(440, 0.1);
                     setTimeout(() => audioSystem.playTone(554, 0.1), 100);
                     setTimeout(() => audioSystem.playTone(659, 0.2), 200);
                     break;
                     
                 case 'correct':
-                    // 正確音效：愉快的和弦
                     audioSystem.playChord([523.25, 659.25, 783.99], 0.5);
                     break;
                     
                 case 'wrong':
-                    // 錯誤音效：低沉的單音
                     audioSystem.playTone(220, 0.3, 'sawtooth');
                     break;
                     
                 case 'achievement':
-                    // 成就音效：華麗的音階
                     [523, 587, 659, 698, 784, 880, 988, 1047].forEach((freq, i) => {
                         setTimeout(() => audioSystem.playTone(freq, 0.2), i * 100);
                     });
                     break;
                     
                 case 'button':
-                    // 按鈕音效：短促的點擊聲
                     audioSystem.playTone(800, 0.1);
                     break;
             }
@@ -976,41 +732,30 @@
             
             playSound('button');
         }
-            currentEnvironment: 'forest',
-            currentMode: 'explore',
-            score: 0,
-            discoveredCount: 0,
-            totalCreatures: 0,
-            level: '新手探險家',
-            answeredQuestions: new Set(),
-            currentQuestion: null,
-            foodChainProgress: { level: 1, selected: [] },
-            waitingForAnswer: false
-        };
 
         // 初始化遊戲
         function initGame() {
             gameState.totalCreatures = Object.values(gameData).reduce((total, env) => total + env.creatures.length, 0);
             updateDisplay();
             loadEnvironment('forest');
-            setupFoodChainGame();
-            resetExperiment();
+            
+            // 初始化音效系統
+            document.addEventListener('click', () => {
+                if (!audioSystem.audioContext) {
+                    audioSystem.init();
+                }
+            }, { once: true });
         }
 
         // 切換遊戲模式
         function switchMode(mode) {
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.game-mode').forEach(mode => mode.classList.remove('active'));
+            document.querySelectorAll('.game-mode').forEach(modeDiv => modeDiv.classList.remove('active'));
             
             event.target.classList.add('active');
             document.getElementById(mode + '-mode').classList.add('active');
             
             gameState.currentMode = mode;
-            
-            if (mode === 'foodchain') {
-                loadFoodChainGame();
-            }
-            
             playSound('button');
         }
 
@@ -1071,7 +816,6 @@
                 gameState.discoveredCount++;
                 gameState.score += 10;
                 
-                // 播放發現音效
                 playSound('discover');
                 
                 showQuestion(creature);
@@ -1081,7 +825,6 @@
                 loadEnvironment(envId);
                 checkAchievements();
             } else {
-                // 如果已經發現，重新顯示問題
                 showQuestion(creature);
                 gameState.waitingForAnswer = true;
             }
@@ -1149,160 +892,30 @@
             }, 3000);
         }
 
-        // 設置食物鏈遊戲
-        function setupFoodChainGame() {
-            const optionsDiv = document.getElementById('chain-options');
-            const currentChain = foodChainData.forest;
-            
-            optionsDiv.innerHTML = '<h4>選擇合適的生物：</h4>';
-            
-            currentChain.slice(1).forEach(creature => {
-                const option = document.createElement('div');
-                option.className = 'chain-item';
-                option.innerHTML = `
-                    <div class="creature-emoji">${creature.emoji}</div>
-                    <div>${creature.name}</div>
-                `;
-                option.onclick = () => selectForChain(creature);
-                optionsDiv.appendChild(option);
-            });
-        }
-
-        // 載入食物鏈遊戲
-        function loadFoodChainGame() {
-            resetFoodChain();
-            setupFoodChainGame();
-        }
-
-        // 選擇食物鏈生物
-        function selectForChain(creature) {
-            const currentLevel = gameState.foodChainProgress.level;
-            if (currentLevel > 4) return;
-            
-            const slot = document.getElementById(`chain-slot-${currentLevel + 1}`);
-            if (slot) {
-                slot.innerHTML = `
-                    <div class="creature-emoji">${creature.emoji}</div>
-                    <div>${creature.name}</div>
-                `;
-                slot.dataset.creatureId = creature.id;
-                gameState.foodChainProgress.selected.push(creature);
-                gameState.foodChainProgress.level++;
-            }
-        }
-
-        // 檢查食物鏈答案
-        function checkFoodChain() {
-            const correctChain = foodChainData.forest.slice(1);
-            const userChain = gameState.foodChainProgress.selected;
-            
-            let isCorrect = true;
-            for (let i = 0; i < userChain.length; i++) {
-                const slot = document.getElementById(`chain-slot-${i + 2}`);
-                if (userChain[i].id === correctChain[i].id) {
-                    slot.classList.add('correct');
-                } else {
-                    slot.classList.add('wrong');
-                    isCorrect = false;
-                }
-            }
-            
-            if (isCorrect && userChain.length === correctChain.length) {
-                gameState.score += 50;
-                updateDisplay();
-                showAchievement('🎉 食物鏈建立正確！你是生態專家！');
-                playSound('achievement');
-            } else {
-                showAchievement('🤔 食物鏈不太對，再試試看！');
-                playSound('wrong');
-            }
-        }
-
-        // 重置食物鏈
-        function resetFoodChain() {
-            gameState.foodChainProgress = { level: 1, selected: [] };
-            
-            for (let i = 2; i <= 4; i++) {
-                const slot = document.getElementById(`chain-slot-${i}`);
-                slot.innerHTML = '<div>點擊選擇</div>';
-                slot.className = 'chain-item';
-                slot.dataset.creatureId = '';
-            }
-        }
-
-        // 調整實驗環境
-        function adjustEnvironment(factor, change) {
-            switch (factor) {
-                case 'temperature':
-                    experimentData.temperature = Math.max(-2, Math.min(2, experimentData.temperature + change));
-                    break;
-                case 'rainfall':
-                    experimentData.rainfall = Math.max(-2, Math.min(2, experimentData.rainfall + change));
-                    break;
-                case 'pollution':
-                    experimentData.pollution = Math.max(0, Math.min(3, experimentData.pollution + change));
-                    break;
-            }
-            updateExperimentDisplay();
-        }
-
-        // 更新實驗顯示
-        function updateExperimentDisplay() {
-            const tempLabels = ['極冷', '很冷', '適中', '很熱', '極熱'];
-            const rainLabels = ['乾旱', '少雨', '適中', '多雨', '洪水'];
-            const pollutionLabels = ['低', '中', '高', '極高'];
-            
-            document.getElementById('temperature').textContent = tempLabels[experimentData.temperature + 2];
-            document.getElementById('rainfall').textContent = rainLabels[experimentData.rainfall + 2];
-            document.getElementById('pollution').textContent = pollutionLabels[experimentData.pollution];
-            
-            // 計算種群變化
-            const tempEffect = 1 - Math.abs(experimentData.temperature) * 0.2;
-            const rainEffect = 1 - Math.abs(experimentData.rainfall) * 0.15;
-            const pollutionEffect = 1 - experimentData.pollution * 0.25;
-            
-            const plantPop = experimentData.basePop.plants * tempEffect * rainEffect * pollutionEffect;
-            const herbivorePop = experimentData.basePop.herbivores * (plantPop / experimentData.basePop.plants) * pollutionEffect;
-            const carnivorePop = experimentData.basePop.carnivores * (herbivorePop / experimentData.basePop.herbivores) * pollutionEffect;
-            
-            document.getElementById('plant-bar').style.height = Math.max(10, plantPop) + 'px';
-            document.getElementById('herbivore-bar').style.height = Math.max(5, herbivorePop) + 'px';
-            document.getElementById('carnivore-bar').style.height = Math.max(5, carnivorePop) + 'px';
-        }
-
-        // 重置實驗
-        function resetExperiment() {
-            experimentData.temperature = 0;
-            experimentData.rainfall = 0;
-            experimentData.pollution = 0;
-            updateExperimentDisplay();
-        }
-
         // 檢查成就
         function checkAchievements() {
-            const achievement = document.getElementById('achievement');
-            let showAchievement = false;
+            let showAchievementFlag = false;
             let achievementText = '';
             
             if (gameState.discoveredCount === 5 && gameState.level === '新手探險家') {
                 gameState.level = '生態學徒';
                 achievementText = '🎉 恭喜升級為生態學徒！';
-                showAchievement = true;
+                showAchievementFlag = true;
             } else if (gameState.discoveredCount === 15 && gameState.level === '生態學徒') {
                 gameState.level = '環境專家';
                 achievementText = '🏆 恭喜升級為環境專家！';
-                showAchievement = true;
+                showAchievementFlag = true;
             } else if (gameState.discoveredCount === 30 && gameState.level === '環境專家') {
                 gameState.level = '生態大師';
                 achievementText = '🌟 恭喜成為生態大師！';
-                showAchievement = true;
+                showAchievementFlag = true;
             } else if (gameState.discoveredCount === gameState.totalCreatures) {
                 achievementText = '🎊 太棒了！你發現了所有生物！你是真正的生態探險家！';
-                showAchievement = true;
+                showAchievementFlag = true;
             }
             
-            if (showAchievement) {
-                this.showAchievement(achievementText);
+            if (showAchievementFlag) {
+                showAchievement(achievementText);
                 playSound('achievement');
             }
         }
